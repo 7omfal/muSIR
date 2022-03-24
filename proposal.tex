@@ -1,0 +1,126 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts,amsmath,amsthm,tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\begin{document}
+\begin{center}
+\Large\textbf{An SIR model for airborne viruses}\\
+\large\textit{John Bolger, Tom Falcone, Farin Rexrode}
+\end{center}
+
+\section*{Introduction}
+Mask usage is an obvious countermeasure for the airborne transmission of infectious diseases, but the efficacy is highly dependent on institutional guidance. Public health agencies must provide concise and unambiguous guidelines to optimize both the quality of masks used and the number of masked individuals. Our aim is to minimize the peak infections of an airborne epidemic by varying a parameter $\mu$ of mask effectiveness and the initial discrepancy between masked and unmasked groups within physically and socially feasible ranges. To this end, we have constructed an SIR model, without explicit demography, and with the general population split between masked and unmasked populations.
+
+\section*{muSIR Model}
+\begin{tikzpicture}[node distance=3cm, auto,
+    every node/.append style={align=center},
+    compartment/.style={draw, minimum size=2cm}]
+
+  \node[compartment](Su)[label=above:Susceptible]{$S_{u}$};
+  \node[compartment](Sm)[below=of Su]{$S_{m}$};
+  \node[compartment](Iu)[right=of Su,label=above:Infected]{$I_{u}$};
+  \node[compartment](Im)[right=of Sm]{$I_{m}$};
+  \node[compartment](R)[right=of Im,yshift=2.5cm,label=above:Recovered]{R};
+  \path[->] (Su) edge node {unmasked} (Iu)
+  (Sm) edge node {masked} (Im)
+  (Iu) edge (R)
+  (Im) edge (R);
+\end{tikzpicture}
+\vspace{1cm}
+\subsection*{Derivation and assumptions}
+Let $i_{um}$ denote the rate of new cases arising from interactions between individuals of $S_{u}$ and $I_{m}$, and so on for $i_{mu},i_{mm},i_{uu}$. Then our model is governed by the system
+\begin{align*}
+  \dot{S}_{u} &= -(i_{um}+i_{uu}) \\
+  \dot{S}_{m} &= -(i_{mu}+i_{mm}) \\
+  \dot{I}_{u} &= i_{um}+i_{uu}-\rho I_{u} \\
+  \dot{I}_{m} &= i_{mu}+i_{mm}-\rho I_{m} \\
+  \dot{R} &= \rho (I_{u}+I_{m}),
+\end{align*}
+where $\rho$ is the constant rate of recovery and $N = S_{u}+S_{m}+I_{u}+I_{m}+R$ is constant. We define an infection scenario to be an encounter between one susceptible and one infected person, each of any masking group, that is effectively equivalent to an unmasked encounter. Let $\alpha = \mathbb{P}(\text{ infection } | \text{ infection scenario })$. In encounters where only one person is masked, we assume that the probability of an infection scenario arising is the same for the masked susceptible and masked infected case. Let $\mu = \mathbb{P}(\text{ infection scenario } | \text{ one mask involved })$. By independence,
+\begin{align*}
+\mathbb{P}(\text{ infection scenario } | \text{ two masks involved }) &= \mathbb{P}(~(\text{ infection scenario } | \text{ masked susceptible })~ \\ &\cap ~(\text{ infection scenario } | \text{ masked infected })~)\\ &= \mu^{2} \\
+\end{align*}
+Define $\varepsilon_{u}$ to be the rate of encounters per all $N I_{u}$ possible encounters involving $I_{u}$, and similarly for $\varepsilon_{m}.$ We will assume that $\varepsilon_{u}= \varepsilon_{m}= \varepsilon$. Now, our incidence terms become
+\begin{align*}
+  i_{uu}&=(\text{ rate of encounters for } I_{u} ~)\mathbb{P}(\text{ encounter is with } S_u ~)\mathbb{P}(\text{ infection in maskless encounter }) )\\
+        &= (\varepsilon N I_{u})(\frac{S_{u}}{N}) \alpha = \varepsilon \alpha S_{u}I_{u}\\
+  i_{um}&=\varepsilon \alpha \mu S_{u} I_{m}\\
+  i_{mu}&=\varepsilon \alpha \mu S_{m} I_{u}\\
+  i_{mm}&=\varepsilon \alpha \mu^{2}S_{m}I_{m}.
+\end{align*}
+Setting $\beta = \varepsilon \alpha$, our system becomes
+\begin{align}
+  \dot{S}_{u} &= -(\beta \mu S_{u} I_{m}+\beta S_{u} I_{u}) \\
+  \dot{S}_{m} &= -(\beta \mu S_{m} I_{u}+\beta \mu^2 S_{m} I_{m}) \\
+  \dot{I}_{u} &= \beta \mu S_{u} I_{m}+\beta S_{u} I_{u}-\rho I_{u} \\
+  \dot{I}_{m} &= \beta \mu S_{m} I_{u}+\beta \mu^2 S_{m} I_{m}-\rho I_{m} \\
+  \dot{R} &= \rho (I_{u}+I_{m}).
+\end{align}
+
+\subsection*{Local analysis}
+Since the equations are independent of $R$, we can confine our analysis to the 4-dimensional system (1-4), which has the Jacobian
+
+\[J =
+\begin{bmatrix}
+  -(\beta \mu I_m + \beta I_u) & 0 & -\beta S_u & -\beta \mu S_u \\
+  0 & -(\beta \mu I_u + \beta \mu^2 I_m) & -\beta \mu S_m & \beta \mu^2 S_m \\
+  \beta \mu I_m + \beta I_{u} & 0 & \beta S_{u} - \rho & \beta \mu S_{u} \\
+  0 & \beta \mu I_{u} + \beta \mu^{2}I_{m} & \beta \mu S_{m} & \beta \mu^{2} S_{m} - \rho
+\end{bmatrix}.
+\]
+Let $I = I_{u} + I_{m}.$ Then (1-4) vanish \textit{iff} $I = 0$, and so
+\[ J(I=0)=
+\begin{bmatrix}
+  0 & 0 & -\beta S_u & -\beta \mu S_u \\
+  0 & 0 & -\beta \mu S_m & \beta \mu^2 S_m \\
+  0 & 0 & \beta S_u - \rho & \beta \mu S_{u} \\
+  0 & 0 & \beta \mu S_{m} & \beta \mu^{2} S_{m} - \rho
+\end{bmatrix}.\]
+
+\subsection*{MATLAB eigencomputations}
+\begin{verbatim}
+% m = \mu = mask failure probability
+% b = \beta = encounter term
+% r = \rho = recovery rate
+% Su = susceptible unmasked
+% Sm = susceptible masked
+syms m b r Su Sm
+
+% J(I=0)
+J = sym([0 0 -b*Su -b*m*Su; ...
+         0 0 -b*m*Sm b*m^2*Sm; ...
+         0 0 b*Su-r b*m*Su; ...
+         0 0 b*m*Sm b*m^2*Sm-r])
+
+% nth column of V is eigenpair with nth diagonal element of D
+[V,D] = eig(J)
+\end{verbatim}
+
+        \color{brown} \begin{verbatim}
+J =
+
+[0, 0,    -Su*b,      -Su*b*m]
+[0, 0,  -Sm*b*m,     Sm*b*m^2]
+[0, 0, Su*b - r,       Su*b*m]
+[0, 0,   Sm*b*m, Sm*b*m^2 - r]
+
+
+V =
+
+[1, 0,               0, -(Su*b*(Sm*m^2 + Su))/(Sm*m*(Sm*b*m^2 - r + Su*b))]
+[0, 1, -(2*Sm*b*m^2)/r,         -(- Sm*b*m^2 + Su*b)/(Sm*b*m^2 - r + Su*b)]
+[0, 0,              -m,                                          Su/(Sm*m)]
+[0, 0,               1,                                                  1]
+
+
+D =
+
+[0, 0,  0,                   0]
+[0, 0,  0,                   0]
+[0, 0, -r,                   0]
+[0, 0,  0, Sm*b*m^2 - r + Su*b]
+
+\end{verbatim} \color{black}
+\end{document}
