@@ -1,0 +1,34 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsfonts,amsmath,amsthm,tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\begin{document}
+\noindent\textit{John Bolger, Tom Falcone, Farin Rexrode}
+\section*{muSIR model}
+
+\begin{align*}
+  \frac{d}{dt}S_{u} &= -\beta \mu S_{u} I_{m} - \beta S_{u} I_{u} \\
+  \frac{d}{dt}S_{m} &= -\beta \mu S_{m} I_{u} - \beta \mu^2 S_{m} I_{m} \\
+  \frac{d}{dt}I_{u} &= \beta \mu S_{u} I_{m} + \beta S_{u} I_{u}-\rho I_{u} \\
+  \frac{d}{dt}I_{m} &= \beta \mu S_{m} I_{u} + \beta \mu^2 S_{m} I_{m}-\rho I_{m} \\
+  \frac{d}{dt}R &= \rho (I_{u}+I_{m}).
+\end{align*}
+
+\section*{Scaling}
+Let $U = S_{u}(0) + I_{u}(0)$ and let $M = S_{m}(0) + I_{m}(0)$. We will scale $t$ and the various populations like so:
+\begin{align*}
+  \hat{S}_{u} &= \frac{S_{u}}{U} & \hat{I}_{u} &= \frac{I_{u}}{U} & \tau &= \beta N \mu t&\\
+  \hat{S}_{m} &= \frac{S_{m}}{M} & \hat{I}_{m} &= \frac{I_{m}}{M} & \hat{R} &= \frac{R}{N}
+\end{align*}
+Setting $p_{u} = \frac{U}{N}$ and $p_{m} = \frac{M}{N}$, the equations become
+\begin{align*}
+  \frac{d}{d\tau}\hat{S}_{u} &= - p_{m}\hat{S}_{u} \hat{I}_{m} -  \frac{p_{u}}{\mu}\hat{S}_{u} \hat{I}_{u} \\
+  \frac{d}{d\tau}\hat{S}_{m} &= - p_{u}\hat{S}_{m} \hat{I}_{u} -  \mu p_{m}\hat{S}_{m} \hat{I}_{m} \\
+  \frac{d}{d\tau}\hat{I}_{u} &=  p_{m} \hat{S}_{u} \hat{I}_{m} + \frac{p_{u}}{\mu} \hat{S}_{u} \hat{I}_{u}-\frac{\rho}{\beta N\mu} \hat{I}_{u} \\
+  \frac{d}{d\tau}\hat{I}_{m} &=  p_{u} \hat{S}_{m} \hat{I}_{u} +  \mu p_{m}\hat{S}_{m} \hat{I}_{m}-\frac{\rho}{\beta N\mu} \hat{I}_{m} \\
+  \frac{d}{d\tau}\hat{R} &= \frac{\rho}{\beta N\mu} (p_{u}\hat{I}_{u}+ p_{m}\hat{I}_{m}).
+\end{align*}
+Recall that $\beta = \varepsilon \alpha$, where $\varepsilon$ is the per capita rate of encounter for one infected individual, and $\alpha = \mathbb P(\text{ infection | mask failure })$. For $N$ large, $\beta N \mu \approx \varepsilon N \frac{N-1}{N}\alpha \mu$ is the initial infection rate in which everyone is maskless but a lone infected person, and so $\frac{\rho}{\beta N \mu} = \frac{\text{ recoveries }}{\text{ infection }}$ in this initial state.
+\end{document}
