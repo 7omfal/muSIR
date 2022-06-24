@@ -1,6 +1,7 @@
 *.aux
 *.log
-*.pdf
-*.synctex.gz
-
+*.bbl
+*.xml
+*.bcf
+*.blg
 /.auctex-auto/
